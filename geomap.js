@@ -34,15 +34,18 @@ function doIt() {
 
     /** Logs Errors */
     function logError(msg) {
+        const rm = () => {
+            errorMsg.style.display = "none";
+            errorMsg.innerHTML = "";
+        }
+
+        if (!msg || msg === "") return rm();
         errorMsg.innerHTML = `<div>${msg}</div>`;
         errorMsg.style.display = "flex";
 
         const btn = errorMsg.appendChild(document.createElement("button"));
         btn.innerHTML = "x";
-        btn.onclick = () => {
-            errorMsg.style.display = "none";
-            errorMsg.innerHTML = "";
-        }
+        btn.onclick = rm;
     }
     // logError("hello world")
 
@@ -88,6 +91,7 @@ function doIt() {
 
     locateBtn.addEventListener("click", async () => {
         try {
+            logError("loading")
             const location = await getLocation();
             lngInput.value = location.longitude;
             latInput.value = location.latitude;
@@ -97,6 +101,8 @@ function doIt() {
                 essential: true, // this animation is considered essential with respect to prefers-reduced-motion
                 zoom: 9000 * 9 / location.accuracy
             });
+
+            logError();
         } catch (err) {
             lngInput.value = "";
             latInput.value = "";
