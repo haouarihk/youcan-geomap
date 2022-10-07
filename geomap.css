@@ -27,7 +27,7 @@
   overflow: hidden;
 }
 
-#locateBtn {
+#locateBtn:active {
   background: green;
 }
 
