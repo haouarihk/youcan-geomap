@@ -27,10 +27,10 @@ function doIt() {
     locateBtn.id = "locateBtn";
     locateBtn.style.position = "absolute";
 
-    const svg = locateBtn.appendChild(document.createElement("img"));
-    svg.src = "https://haouarihk.github.io/youcan-geomap/location.svg";
-    svg.width = "20px";
-    svg.height = "20px";
+    // const svg = locateBtn.appendChild(document.createElement("img"));
+    // svg.src = "https://haouarihk.github.io/youcan-geomap/location.svg";
+    // svg.width = "40px";
+    // svg.height = "40px";
 
     /** Logs Errors */
     function logError(msg) {
