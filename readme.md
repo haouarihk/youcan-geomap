@@ -1,4 +1,4 @@
-# Plugin Geomap
+# Plugin youcan-geomap
 
 This plugin allows you to add location to your COD(cash on delivery) method
 
@@ -25,7 +25,7 @@ note: don't forget to disable shipping address(it's at the bottom)
 <!-- Additional footer code -- plugin(github.com/haouarihk/geomap) -->
 <script>
     // access token for the mapbox api
-    const MAPBOX_ACCESS_TOKEN = "<your mapbox api here>"
+    const MapboxAccessToken = undefined;
 </script>
 
 <script src="https://haouarihk.github.io/youcan-geomap/geomap.js"></script>
