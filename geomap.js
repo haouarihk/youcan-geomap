@@ -6,6 +6,7 @@ function doIt() {
     const checkout = document.querySelector(".checkout-form");
     const lngInput = document.querySelector('[placeholder="lng"]')
     const latInput = document.querySelector('[placeholder="lat"]')
+    const zoomInput = document.querySelector('[placeholder="zoom"]')
 
     // checking if we're on the checkout page
     if (!checkout) return;
@@ -13,6 +14,7 @@ function doIt() {
     // checking for important fields
     if (!lngInput) return alert("couldn't find lng field, The Map Will not work without it")
     if (!latInput) return alert("couldn't find lat field, The Map Will not work without it")
+    if (!zoomInput) return alert("couldn't find zoom field, The Map Will not work without it")
 
 
 
@@ -22,6 +24,9 @@ function doIt() {
 
     const mapDOM = checkout.appendChild(document.createElement("div"));
     mapDOM.id = "map";
+
+    const selectedArea = mapDOM.appendChild(document.createElement("div"));
+    selectedArea.id = "selected-area";
 
     /** Logs Errors */
     function logError(msg) {
@@ -50,12 +55,15 @@ function doIt() {
     });
 
     map.on("load", () => {
+        if (+zoomInput.value) map.setZoom(+zoomInput.value);
+        if (+latInput.value && +lngInput.value) map.setCenter({
+            lat: +latInput.value,
+            lng: +lngInput.value
+        })
+
         errorMsg.innerText = "loaded"
         map.on('moveend', (e) => {
-            const center = map.getCenter()
-            console.log("moved", center);
-            lngInput.value = center.lng;
-            latInput.value = center.lat;
+            updateLoc();
         });
 
         document.querySelector(".mapboxgl-ctrl-bottom-right").remove();
@@ -73,6 +81,14 @@ function doIt() {
             showUserHeading: true
         })
     );
+
+    function updateLoc() {
+        const center = map.getCenter()
+        console.log("moved", center);
+        lngInput.value = center.lng;
+        latInput.value = center.lat;
+        zoomInput.value = map.getZoom();
+    }
 }
 
 doIt();
