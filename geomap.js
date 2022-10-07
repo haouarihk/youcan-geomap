@@ -23,15 +23,6 @@ function doIt() {
     const mapDOM = checkout.appendChild(document.createElement("div"));
     mapDOM.id = "map";
 
-    const locateBtn = checkout.appendChild(document.createElement("div"));
-    locateBtn.id = "locateBtn";
-    locateBtn.style.position = "absolute";
-
-    // const svg = locateBtn.appendChild(document.createElement("img"));
-    // svg.src = "https://haouarihk.github.io/youcan-geomap/location.svg";
-    // svg.width = "40px";
-    // svg.height = "40px";
-
     /** Logs Errors */
     function logError(msg) {
         const rm = () => {
@@ -48,8 +39,6 @@ function doIt() {
         btn.onclick = rm;
     }
     // logError("hello world")
-
-
 
     const map = new mapboxgl.Map({
         accessToken: "pk.eyJ1IjoiaGFpdGhlbTIwMDEiLCJhIjoiY2w1cjd5YTBrMWUyYjNqbno5dHBhYmNrNSJ9.fYhBPKEodo0vwwZqgci93Q",
@@ -68,47 +57,22 @@ function doIt() {
             lngInput.value = center.lng;
             latInput.value = center.lat;
         });
+
+        document.querySelector(".mapboxgl-ctrl-bottom-right").remove();
+        document.querySelector(".mapboxgl-ctrl-bottom-left").remove();
     });
 
-
-
-    /**
-     * 
-     * @returns {GeolocationCoordinates}
-     */
-    function getLocation() {
-        return new Promise((res, rej) => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((d) => res(d.coords), () => {
-                    rej("Please Enable Geolocation");
-                });
-
-            } else {
-                rej("Geolocation is not supported by this browser");
-            }
+    map.addControl(
+        new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            // When active the map will receive updates to the device's location as it changes.
+            trackUserLocation: true,
+            // Draw an arrow next to the location dot to indicate which direction the device is heading.
+            showUserHeading: true
         })
-    }
-
-    locateBtn.addEventListener("click", async () => {
-        try {
-            logError("loading")
-            const location = await getLocation();
-            lngInput.value = location.longitude;
-            latInput.value = location.latitude;
-            console.log(location)
-            map.flyTo({
-                center: [location.longitude, location.latitude],
-                essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-                zoom: 9000 * 9 / location.accuracy
-            });
-
-            // logError();
-        } catch (err) {
-            lngInput.value = "";
-            latInput.value = "";
-            logError(err);
-        }
-    })
+    );
 }
 
 doIt();
