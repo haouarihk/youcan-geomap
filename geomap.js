@@ -23,12 +23,12 @@ function doIt() {
     const mapDOM = checkout.appendChild(document.createElement("div"));
     mapDOM.id = "map";
 
-    const locateBtn = mapDOM.appendChild(document.createElement("div"));
+    const locateBtn = checkout.appendChild(document.createElement("div"));
     locateBtn.id = "locateBtn";
     locateBtn.style.position = "absolute";
 
     const svg = locateBtn.appendChild(document.createElement("img"));
-    svg.src = "http://127.0.0.1:5500/location.svg";
+    svg.src = "https://haouarihk.github.io/youcan-geomap/location.svg";
     svg.width = "20px";
     svg.height = "20px";
 
@@ -102,7 +102,7 @@ function doIt() {
                 zoom: 9000 * 9 / location.accuracy
             });
 
-            logError();
+            // logError();
         } catch (err) {
             lngInput.value = "";
             latInput.value = "";
