@@ -29,7 +29,44 @@
 
     </div>
 
+    <textarea id="inputspeed" cols="40" width="100%">
+
+    </textarea>
+
+
+    <script>
+        const MapboxAccessToken = "pk.eyJ1IjoiaGFpdGhlbTIwMDEiLCJhIjoiY2w1cjd5YTBrMWUyYjNqbno5dHBhYmNrNSJ9.fYhBPKEodo0vwwZqgci93Q";
+    </script>
     <script src="/geomap.js"></script>
+
+
+    <script>
+        const d = document.getElementById("inputspeed");
+        function triggerChange() {
+            const datastr = d.value?.trim();
+            const s = datastr.split("\n");
+            console.log
+            const lng = +s.find(e => e.startsWith("lng")).split(`:`)[1]
+            const lat = +s.find(e => e.startsWith("lat")).split(`:`)[1]
+            const zoom = +s.find(e => e.startsWith("zoom")).split(`:`)[1]
+
+            if (!lng || !lat || !zoom) return alert("falsy");
+
+            lngInput.value = lng;
+            latInput.value = lat;
+            zoomInput.value = zoom;
+            map.flyTo({
+                center: [lng, lat],
+                essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+                zoom
+            });
+        }
+        d.onchange = triggerChange;
+
+    </script>
+    <button onclick="triggerChange()">
+        update
+    </button>
 </body>
 
 </html>

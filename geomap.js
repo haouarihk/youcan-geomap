@@ -1,12 +1,15 @@
 
-// import mapboxgl from "mapbox-gl";
+// @import{"mapbox-gl"};
 
+let map;
+const checkout = document.querySelector(".checkout-form");
+const lngInput = document.querySelector('[placeholder="lng"]')
+const latInput = document.querySelector('[placeholder="lat"]')
+const zoomInput = document.querySelector('[placeholder="zoom"]')
 
 function doIt() {
-    const checkout = document.querySelector(".checkout-form");
-    const lngInput = document.querySelector('[placeholder="lng"]')
-    const latInput = document.querySelector('[placeholder="lat"]')
-    const zoomInput = document.querySelector('[placeholder="zoom"]')
+    const MAPBOX_ACCESS_TOKEN = MapboxAccessToken || "pk.eyJ1IjoiaGFpdGhlbTIwMDEiLCJhIjoiY2w1cjd5YTBrMWUyYjNqbno5dHBhYmNrNSJ9.fYhBPKEodo0vwwZqgci93Q"
+
 
     // checking if we're on the checkout page
     if (!checkout) return;
@@ -15,6 +18,9 @@ function doIt() {
     if (!lngInput) return alert("couldn't find lng field, The Map Will not work without it")
     if (!latInput) return alert("couldn't find lat field, The Map Will not work without it")
     if (!zoomInput) return alert("couldn't find zoom field, The Map Will not work without it")
+
+
+    if (!MAPBOX_ACCESS_TOKEN) console.warn("MAPBOX_ACCESS_TOKEN hasn't ")
 
 
 
@@ -28,25 +34,8 @@ function doIt() {
     const selectedArea = mapDOM.appendChild(document.createElement("div"));
     selectedArea.id = "selected-area";
 
-    /** Logs Errors */
-    function logError(msg) {
-        const rm = () => {
-            errorMsg.style.display = "none";
-            errorMsg.innerHTML = "";
-        }
-
-        if (!msg || msg === "") return rm();
-        errorMsg.innerHTML = `<div>${msg}</div>`;
-        errorMsg.style.display = "flex";
-
-        const btn = errorMsg.appendChild(document.createElement("button"));
-        btn.innerHTML = "x";
-        btn.onclick = rm;
-    }
-    // logError("hello world")
-
-    const map = new mapboxgl.Map({
-        accessToken: "pk.eyJ1IjoiaGFpdGhlbTIwMDEiLCJhIjoiY2w1cjd5YTBrMWUyYjNqbno5dHBhYmNrNSJ9.fYhBPKEodo0vwwZqgci93Q",
+    map = new mapboxgl.Map({
+        accessToken: MAPBOX_ACCESS_TOKEN,
         container: 'map',
         antialias: false,
         style: 'mapbox://styles/mapbox/streets-v11',
@@ -55,6 +44,16 @@ function doIt() {
     });
 
     map.on("load", () => {
+        map.addLayer({
+            id: 'rpd_parks',
+            type: 'fill',
+            source: {
+                type: 'vector',
+                url: 'mapbox://mapbox.3o7ubwm8'
+            },
+            'source-layer': 'RPD_Parks'
+        });
+
         if (+zoomInput.value) map.setZoom(+zoomInput.value);
         if (+latInput.value && +lngInput.value) map.setCenter({
             lat: +latInput.value,
@@ -66,9 +65,11 @@ function doIt() {
             updateLoc();
         });
 
+        // remove unnecessary tags/logos
         document.querySelector(".mapboxgl-ctrl-bottom-right").remove();
         document.querySelector(".mapboxgl-ctrl-bottom-left").remove();
     });
+
 
     map.addControl(
         new mapboxgl.GeolocateControl({
@@ -81,6 +82,8 @@ function doIt() {
             showUserHeading: true
         })
     );
+
+
 
     function updateLoc() {
         const center = map.getCenter()
