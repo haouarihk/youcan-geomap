@@ -4,6 +4,25 @@
   height: 400px;
 }
 
+.controls{
+  display:flex;
+  gap:12px;
+  position:absolute;
+  bottom:20px;
+  left:20px;
+  z-index:200;
+}
+
+.controls>*{
+  padding:2rem;
+  font-size:36pt;
+  border-radius:20%;
+  background:rgb(63, 177, 206);
+  cursor:pointer;
+  border:0;
+  
+}
+
 #errMsg {
   justify-content: space-between;
   width: 100%;

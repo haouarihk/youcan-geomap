@@ -1,3 +1,7 @@
+// get lat lng radius from query
+const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+});
 
 // @import{"mapbox-gl"};
 
@@ -9,6 +13,20 @@ const radiusInput = document.querySelector('[placeholder="radius"]')
 const locationInput = document.querySelector('[placeholder="location"]')
 
 const centerMarker = new mapboxgl.Marker();
+
+const browsingMode = +params.lat && +params.lng && +params.radius
+
+const circle = new MapboxCircle(
+    {
+        lng: +params.lng,
+        lat: +params.lat
+    },
+    +params.radius || 72,
+    {
+        editable: !browsingMode
+    }
+);
+
 function doIt() {
 
     const MAPBOX_ACCESS_TOKEN = MapboxAccessToken || "pk.eyJ1IjoiaGFpdGhlbTIwMDEiLCJhIjoiY2w1cjd5YTBrMWUyYjNqbno5dHBhYmNrNSJ9.fYhBPKEodo0vwwZqgci93Q"
@@ -37,23 +55,6 @@ function doIt() {
     const mapDOM = checkout.appendChild(document.createElement("div"));
     mapDOM.id = "map";
 
-    // get lat lng radius from query
-    const params = new Proxy(new URLSearchParams(window.location.search), {
-        get: (searchParams, prop) => searchParams.get(prop),
-    });
-
-    const browsingMode = +params.lat && +params.lng && +params.radius
-
-    const circle = new MapboxCircle(
-        {
-            lng: +params.lng,
-            lat: +params.lat
-        },
-        +params.radius || 72,
-        {
-            editable: !browsingMode
-        }
-    );
 
     map = new mapboxgl.Map({
         accessToken: MAPBOX_ACCESS_TOKEN,
@@ -102,7 +103,23 @@ function doIt() {
                 })
         }
 
-        map.on('moveend', (e) => {
+        map.on("moveend", () => {
+            const center = map.getCenter()
+            if (!browsingMode) {
+                centerMarker.setLngLat([center.lng, center.lat])
+                circle.setCenter({
+                    lng: +center.lng || 0,
+                    lat: +center.lat || 0
+                })
+                // circle.setRadius(radius)
+            }
+        })
+
+        circle.on('centerchanged', (e) => {
+            updateLoc();
+        });
+
+        circle.on('radiuschanged', (e) => {
             updateLoc();
         });
 
@@ -131,15 +148,6 @@ function doIt() {
         console.log("moved", center);
         const radius = circle.getRadius();
 
-        if (!browsingMode) {
-            centerMarker.setLngLat([center.lng, center.lat])
-            circle.setCenter({
-                lng: +center.lng || 0,
-                lat: +center.lat || 0
-            })
-            // circle.setRadius(radius)
-        }
-
         if (locationInput) {
             locationInput.value = `https://haouarihk.github.io/youcan-geomap?lng=${encodeURIComponent(center.lng)}&lat=${encodeURIComponent(center.lat)}&radius=${encodeURIComponent(radius)}`
         } else console.warn("location field not defined")
@@ -149,8 +157,33 @@ function doIt() {
         latInput.value = center.lat;
         radiusInput.value = radius;
     }
+
+
 }
 
+
+const controls = document.querySelector(".controls");
+
+if (browsingMode) {
+    controls.style.display = "none"
+}
+
+const moveRad = 20;
+const minRad = 30;
+const maxRad = 200;
+function increaseCircleRadius() {
+    const rad = circle.getRadius();
+    const center = circle.getCenter();
+    if (rad < maxRad)
+        circle.setCenter({ lat: center.lat, lng: center.lng }).setRadius(rad + moveRad)
+}
+
+function decreaseCircleRadius() {
+    const rad = circle.getRadius();
+    console.log(rad)
+    if (rad > minRad)
+        circle.setRadius(rad - moveRad)
+}
 window.onload = () => doIt();
 
 
