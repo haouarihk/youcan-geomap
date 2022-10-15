@@ -17,6 +17,7 @@ note: don't forget to disable shipping address(it's at the bottom)
 <!-- Additional header code -- plugin(github.com/haouarihk/geomap) -->
 <script src='https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js'></script>
 <link href='https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://npmcdn.com/mapbox-gl-circle/dist/mapbox-gl-circle.min.js'></script>
 <link href='https://haouarihk.github.io/youcan-geomap/geomap.css' rel='stylesheet' />
 <!-- plugin(github.com/haouarihk/geomap) -->
 ```
@@ -24,7 +25,7 @@ note: don't forget to disable shipping address(it's at the bottom)
 ```html
 <!-- Additional footer code -- plugin(github.com/haouarihk/geomap) -->
 <script>
-    // access token for the mapbox api
+    // access token for the mapbox api (you can leave it empty if you don't want search)
     const MapboxAccessToken = undefined;
 </script>
 

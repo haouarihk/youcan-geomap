@@ -5,7 +5,7 @@ let map;
 const checkout = document.querySelector(".checkout-form");
 const lngInput = document.querySelector('[placeholder="lng"]')
 const latInput = document.querySelector('[placeholder="lat"]')
-const zoomInput = document.querySelector('[placeholder="zoom"]')
+const radiusInput = document.querySelector('[placeholder="radius"]')
 const locationInput = document.querySelector('[placeholder="location"]')
 
 const centerMarker = new mapboxgl.Marker();
@@ -21,7 +21,7 @@ function doIt() {
         // checking for important fields
         if (!lngInput) return alert("couldn't find lng field, The Map Will not work without it")
         if (!latInput) return alert("couldn't find lat field, The Map Will not work without it")
-        if (!zoomInput) return alert("couldn't find zoom field, The Map Will not work without it")
+        if (!radiusInput) return alert("couldn't find radius field, The Map Will not work without it")
     }
 
 
@@ -40,19 +40,19 @@ function doIt() {
     const selectedArea = mapDOM.appendChild(document.createElement("div"));
     selectedArea.id = "selected-area";
 
-    // get lat lng zoom from query
+    // get lat lng radius from query
     const params = new Proxy(new URLSearchParams(window.location.search), {
         get: (searchParams, prop) => searchParams.get(prop),
     });
 
-    const browsingMode = +params.lat && +params.lng && +params.zoom
+    const browsingMode = +params.lat && +params.lng && +params.radius
 
     const circle = new MapboxCircle(
         {
             lng: +params.lng,
             lat: +params.lat
         },
-        +params.zoom || 72,
+        +params.radius || 72,
         {
             editable: !browsingMode
         }
@@ -64,8 +64,6 @@ function doIt() {
         antialias: false,
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [+params.lng, +params.lat],
-        zoom: +params.zoom,
-        boxZoom: +params.zoom
     });
 
     map.on("load", () => {
@@ -87,12 +85,18 @@ function doIt() {
         centerMarker.setLngLat([+params.lng, +params.lat])
         centerMarker.addTo(map);
         circle.setCenter({ lng: params.lng, lat: +params.lat })
-        circle.setRadius(+params.zoom)
+        circle.setRadius(+params.radius)
         circle.addTo(map);
+        const rad = (+params.radius) * 10 ** -5
+        if (browsingMode)
+            map.fitBounds([
+                [(+params.lng) - rad, (+params.lat) - rad], // southwestern corner of the bounds
+                [(+params.lng) + rad, (+params.lat) + rad] // northeastern corner of the bounds
+            ]);
 
-        if (latInput && lngInput && zoomInput) {
-            if (+zoomInput.value)
-                circle.setRadius(+zoomInput.value);
+        if (latInput && lngInput && radiusInput) {
+            if (+radiusInput.value)
+                circle.setRadius(+radiusInput.value);
 
             if (+latInput.value && +lngInput.value)
                 map.setCenter({
@@ -128,7 +132,7 @@ function doIt() {
     function updateLoc() {
         const center = map.getCenter()
         console.log("moved", center);
-        const zoom = circle.getRadius();
+        const radius = circle.getRadius();
 
         if (!browsingMode) {
             centerMarker.setLngLat([center.lng, center.lat])
@@ -136,17 +140,17 @@ function doIt() {
                 lng: +center.lng || 0,
                 lat: +center.lat || 0
             })
-            // circle.setRadius(zoom)
+            // circle.setRadius(radius)
         }
 
         if (locationInput) {
-            locationInput.value = `https://haouarihk.github.io/youcan-geomap?lng=${encodeURIComponent(center.lng)}&lat=${encodeURIComponent(center.lat)}&zoom=${encodeURIComponent(zoom)}`
+            locationInput.value = `https://haouarihk.github.io/youcan-geomap?lng=${encodeURIComponent(center.lng)}&lat=${encodeURIComponent(center.lat)}&radius=${encodeURIComponent(radius)}`
         } else console.warn("location field not defined")
 
-        if (!lngInput || !latInput || !zoomInput) return;
+        if (!lngInput || !latInput || !radiusInput) return;
         lngInput.value = center.lng;
         latInput.value = center.lat;
-        zoomInput.value = zoom;
+        radiusInput.value = radius;
     }
 }
 
