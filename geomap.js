@@ -118,7 +118,7 @@ function doIt() {
             locationInput.value = `https://haouarihk.github.io/youcan-geomap?lng=${encodeURIComponent(center.lng)}&lat=${encodeURIComponent(center.lat)}&zoom=${encodeURIComponent(zoom)}`
         }
 
-        if (!lngInput || !latInput || zoomInput) return;
+        if (!lngInput || !latInput || !zoomInput) return;
         lngInput.value = center.lng;
         latInput.value = center.lat;
         zoomInput.value = zoom;
