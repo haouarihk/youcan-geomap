@@ -6,6 +6,7 @@ const checkout = document.querySelector(".checkout-form");
 const lngInput = document.querySelector('[placeholder="lng"]')
 const latInput = document.querySelector('[placeholder="lat"]')
 const zoomInput = document.querySelector('[placeholder="zoom"]')
+const locationInput = document.querySelector('[placeholder="location"]')
 
 function doIt() {
     const MAPBOX_ACCESS_TOKEN = MapboxAccessToken || "pk.eyJ1IjoiaGFpdGhlbTIwMDEiLCJhIjoiY2w1cjd5YTBrMWUyYjNqbno5dHBhYmNrNSJ9.fYhBPKEodo0vwwZqgci93Q"
@@ -14,10 +15,13 @@ function doIt() {
     // checking if we're on the checkout page
     if (!checkout) return;
 
-    // checking for important fields
-    if (!lngInput) return alert("couldn't find lng field, The Map Will not work without it")
-    if (!latInput) return alert("couldn't find lat field, The Map Will not work without it")
-    if (!zoomInput) return alert("couldn't find zoom field, The Map Will not work without it")
+    if (!locationInput) {
+        // checking for important fields
+        if (!lngInput) return alert("couldn't find lng field, The Map Will not work without it")
+        if (!latInput) return alert("couldn't find lat field, The Map Will not work without it")
+        if (!zoomInput) return alert("couldn't find zoom field, The Map Will not work without it")
+    }
+
 
 
     if (!MAPBOX_ACCESS_TOKEN) console.warn("MAPBOX_ACCESS_TOKEN hasn't ")
@@ -44,6 +48,21 @@ function doIt() {
     });
 
     map.on("load", () => {
+        // get lat lng zoom from query
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+            get: (searchParams, prop) => searchParams.get(prop),
+        });
+
+        // use them on the map
+        if (+params.lat && + params.lng && params.zoom) {
+            map.setZoom(+params.zoom);
+            map.setCenter({
+                lat: +params.lat,
+                lng: +params.lng
+            })
+        }
+
+
         map.addLayer({
             id: 'rpd_parks',
             type: 'fill',
@@ -54,11 +73,16 @@ function doIt() {
             'source-layer': 'RPD_Parks'
         });
 
-        if (+zoomInput.value) map.setZoom(+zoomInput.value);
-        if (+latInput.value && +lngInput.value) map.setCenter({
-            lat: +latInput.value,
-            lng: +lngInput.value
-        })
+        if (zoomInput && latInput && lngInput) {
+            if (+zoomInput.value)
+                map.setZoom(+zoomInput.value);
+
+            if (+latInput.value && +lngInput.value)
+                map.setCenter({
+                    lat: +latInput.value,
+                    lng: +lngInput.value
+                })
+        }
 
         errorMsg.innerText = "loaded"
         map.on('moveend', (e) => {
@@ -88,9 +112,16 @@ function doIt() {
     function updateLoc() {
         const center = map.getCenter()
         console.log("moved", center);
+        const zoom = map.getZoom();
+
+        if (locationInput) {
+            locationInput.value = `https://github.com/haouarihk/youcan-geomap?lng=${encodeURIComponent(center.lng)}&lat=${encodeURIComponent(center.lat)}&zoom=${encodeURIComponent(zoom)}`
+        }
+
+        if (!lngInput || !latInput || zoomInput) return;
         lngInput.value = center.lng;
         latInput.value = center.lat;
-        zoomInput.value = map.getZoom();
+        zoomInput.value = zoom;
     }
 }
 
