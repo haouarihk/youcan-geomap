@@ -115,7 +115,7 @@ function doIt() {
         const zoom = map.getZoom();
 
         if (locationInput) {
-            locationInput.value = `https://github.com/haouarihk/youcan-geomap?lng=${encodeURIComponent(center.lng)}&lat=${encodeURIComponent(center.lat)}&zoom=${encodeURIComponent(zoom)}`
+            locationInput.value = `https://haouarihk.github.io/youcan-geomap?lng=${encodeURIComponent(center.lng)}&lat=${encodeURIComponent(center.lat)}&zoom=${encodeURIComponent(zoom)}`
         }
 
         if (!lngInput || !latInput || zoomInput) return;
