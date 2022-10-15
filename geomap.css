@@ -1,7 +1,7 @@
 #map {
   position: relative;
-  width: 100%;
-  height: 400px;
+  width: 98vw;
+  height: 98vh;
 }
 
 #errMsg {
@@ -11,25 +11,6 @@
   padding: 1rem 1rem;
 }
 
-/* #selected-area {
-  max-width: 350px;
-  height: 350px;
-  position: absolute;
-
-  margin-left: auto;
-  margin-right: auto;
-  top: 25px;
-  opacity: 0.5;
-  pointer-events: none;
-  left: 0;
-  right: 0;
-  text-align: center;
-
-  z-index: 20;
-  border-radius: 50%;
-  background: rgba(29, 161, 242, 0.4);
-  border: 4px solid rgba(29, 161, 242, 1);
-} */
 
 .mapboxgl-canvas {
 }

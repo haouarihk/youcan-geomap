@@ -23,17 +23,13 @@
 </head>
 
 <body style="max-width:600px">
-    <input placeholder="lng"></input>
-    <input placeholder="lat"></input>
-    <input placeholder="radius"></input>
-    <input placeholder="location"></input>
+    <input placeholder="lng" style="display:none;"></input>
+    <input placeholder="lat" style="display:none;"></input>
+    <input placeholder="radius" style="display:none;"></input>
+    <input placeholder="location" style="display:none;"></input>
     <div class="checkout-form">
 
     </div>
-
-    <textarea id="inputspeed" cols="40" width="100%">
-
-    </textarea>
 
 
     <script>
@@ -41,34 +37,6 @@
     </script>
 
     <script src="./geomap.js"></script>
-
-    <script>
-        const d = document.getElementById("inputspeed");
-        function triggerChange() {
-            const datastr = d.value?.trim();
-            const s = datastr.split("\n");
-            console.log
-            const lng = +s.find(e => e.startsWith("lng")).split(`:`)[1]
-            const lat = +s.find(e => e.startsWith("lat")).split(`:`)[1]
-            const zoom = +s.find(e => e.startsWith("zoom")).split(`:`)[1]
-
-            if (!lng || !lat || !zoom) return alert("falsy");
-
-            lngInput.value = lng;
-            latInput.value = lat;
-            zoomInput.value = zoom;
-            map.flyTo({
-                center: [lng, lat],
-                essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-                zoom
-            });
-        }
-        d.onchange = triggerChange;
-    </script>
-
-    <button onclick="triggerChange()">
-        update
-    </button>
 </body>
 
 </html>

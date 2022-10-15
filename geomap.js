@@ -37,9 +37,6 @@ function doIt() {
     const mapDOM = checkout.appendChild(document.createElement("div"));
     mapDOM.id = "map";
 
-    const selectedArea = mapDOM.appendChild(document.createElement("div"));
-    selectedArea.id = "selected-area";
-
     // get lat lng radius from query
     const params = new Proxy(new URLSearchParams(window.location.search), {
         get: (searchParams, prop) => searchParams.get(prop),
