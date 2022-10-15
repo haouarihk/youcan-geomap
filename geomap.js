@@ -8,6 +8,7 @@ const latInput = document.querySelector('[placeholder="lat"]')
 const zoomInput = document.querySelector('[placeholder="zoom"]')
 const locationInput = document.querySelector('[placeholder="location"]')
 
+
 function doIt() {
     const MAPBOX_ACCESS_TOKEN = MapboxAccessToken || "pk.eyJ1IjoiaGFpdGhlbTIwMDEiLCJhIjoiY2w1cjd5YTBrMWUyYjNqbno5dHBhYmNrNSJ9.fYhBPKEodo0vwwZqgci93Q"
 
@@ -38,30 +39,25 @@ function doIt() {
     const selectedArea = mapDOM.appendChild(document.createElement("div"));
     selectedArea.id = "selected-area";
 
+    // get lat lng zoom from query
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+    });
+
+
     map = new mapboxgl.Map({
         accessToken: MAPBOX_ACCESS_TOKEN,
         container: 'map',
         antialias: false,
         style: 'mapbox://styles/mapbox/streets-v11',
-        // center: [-74.5, 40],
-        // zoom: 9
+        center: [+params.lng, +params.lat],
+        zoom: +params.zoom,
+        boxZoom: +params.zoom
     });
 
     map.on("load", () => {
-        // get lat lng zoom from query
-        const params = new Proxy(new URLSearchParams(window.location.search), {
-            get: (searchParams, prop) => searchParams.get(prop),
-        });
-
-        // use them on the map
-        if (+params.lat && + params.lng && params.zoom) {
-            map.setZoom(+params.zoom);
-            map.setCenter({
-                lat: +params.lat,
-                lng: +params.lng
-            })
-        }
-
+        if (+params.lat && + params.lng && + params.zoom)
+            updateLoc()
 
         map.addLayer({
             id: 'rpd_parks',
@@ -73,18 +69,18 @@ function doIt() {
             'source-layer': 'RPD_Parks'
         });
 
-        if (zoomInput && latInput && lngInput) {
+
+        if (latInput && lngInput && zoomInput) {
             if (+zoomInput.value)
                 map.setZoom(+zoomInput.value);
 
             if (+latInput.value && +lngInput.value)
                 map.setCenter({
                     lat: +latInput.value,
-                    lng: +lngInput.value
+                    lng: +lngInput.value,
                 })
         }
 
-        errorMsg.innerText = "loaded"
         map.on('moveend', (e) => {
             updateLoc();
         });
@@ -92,6 +88,8 @@ function doIt() {
         // remove unnecessary tags/logos
         document.querySelector(".mapboxgl-ctrl-bottom-right").remove();
         document.querySelector(".mapboxgl-ctrl-bottom-left").remove();
+
+
     });
 
 
@@ -116,7 +114,7 @@ function doIt() {
 
         if (locationInput) {
             locationInput.value = `https://haouarihk.github.io/youcan-geomap?lng=${encodeURIComponent(center.lng)}&lat=${encodeURIComponent(center.lat)}&zoom=${encodeURIComponent(zoom)}`
-        }
+        } else console.warn("location field not defined")
 
         if (!lngInput || !latInput || !zoomInput) return;
         lngInput.value = center.lng;
@@ -125,6 +123,6 @@ function doIt() {
     }
 }
 
-doIt();
+window.onload = () => doIt();
 
 
