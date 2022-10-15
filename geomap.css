@@ -11,7 +11,7 @@
   padding: 1rem 1rem;
 }
 
-#selected-area {
+/* #selected-area {
   max-width: 350px;
   height: 350px;
   position: absolute;
@@ -29,7 +29,7 @@
   border-radius: 50%;
   background: rgba(29, 161, 242, 0.4);
   border: 4px solid rgba(29, 161, 242, 1);
-}
+} */
 
 .mapboxgl-canvas {
 }

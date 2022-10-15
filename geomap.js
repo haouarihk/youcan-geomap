@@ -8,8 +8,9 @@ const latInput = document.querySelector('[placeholder="lat"]')
 const zoomInput = document.querySelector('[placeholder="zoom"]')
 const locationInput = document.querySelector('[placeholder="location"]')
 
-
+const centerMarker = new mapboxgl.Marker();
 function doIt() {
+
     const MAPBOX_ACCESS_TOKEN = MapboxAccessToken || "pk.eyJ1IjoiaGFpdGhlbTIwMDEiLCJhIjoiY2w1cjd5YTBrMWUyYjNqbno5dHBhYmNrNSJ9.fYhBPKEodo0vwwZqgci93Q"
 
 
@@ -44,6 +45,18 @@ function doIt() {
         get: (searchParams, prop) => searchParams.get(prop),
     });
 
+    const browsingMode = +params.lat && +params.lng && +params.zoom
+
+    const circle = new MapboxCircle(
+        {
+            lng: +params.lng,
+            lat: +params.lat
+        },
+        +params.zoom || 72,
+        {
+            editable: !browsingMode
+        }
+    );
 
     map = new mapboxgl.Map({
         accessToken: MAPBOX_ACCESS_TOKEN,
@@ -56,7 +69,7 @@ function doIt() {
     });
 
     map.on("load", () => {
-        if (+params.lat && + params.lng && + params.zoom)
+        if (!browsingMode)
             updateLoc()
 
         map.addLayer({
@@ -70,9 +83,16 @@ function doIt() {
         });
 
 
+
+        centerMarker.setLngLat([+params.lng, +params.lat])
+        centerMarker.addTo(map);
+        circle.setCenter({ lng: params.lng, lat: +params.lat })
+        circle.setRadius(+params.zoom)
+        circle.addTo(map);
+
         if (latInput && lngInput && zoomInput) {
             if (+zoomInput.value)
-                map.setZoom(+zoomInput.value);
+                circle.setRadius(+zoomInput.value);
 
             if (+latInput.value && +lngInput.value)
                 map.setCenter({
@@ -88,8 +108,6 @@ function doIt() {
         // remove unnecessary tags/logos
         document.querySelector(".mapboxgl-ctrl-bottom-right").remove();
         document.querySelector(".mapboxgl-ctrl-bottom-left").remove();
-
-
     });
 
 
@@ -110,7 +128,16 @@ function doIt() {
     function updateLoc() {
         const center = map.getCenter()
         console.log("moved", center);
-        const zoom = map.getZoom();
+        const zoom = circle.getRadius();
+
+        if (!browsingMode) {
+            centerMarker.setLngLat([center.lng, center.lat])
+            circle.setCenter({
+                lng: +center.lng || 0,
+                lat: +center.lat || 0
+            })
+            // circle.setRadius(zoom)
+        }
 
         if (locationInput) {
             locationInput.value = `https://haouarihk.github.io/youcan-geomap?lng=${encodeURIComponent(center.lng)}&lat=${encodeURIComponent(center.lat)}&zoom=${encodeURIComponent(zoom)}`
